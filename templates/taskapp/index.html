@@ -1,0 +1,142 @@
+{%extends 'partials/base.html'%}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+  <main class="ms-4">
+  <div class="container">
+      <div class="row">
+          <div class="col-xl-8">
+              <div class="card">
+                  <div class="card-header bg-black text-light"><h3 ><i class="bi bi-file-bar-graph-fill"></i> STATS.. </h3> </div>
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col-xl-4">
+                              <div class="card bg-danger text-white">
+                                  <div class="card-body ">
+                                      <p class="text-center"><i class="bi bi-x-circle-fill"></i> Incompleted Task</p>
+                                      <p class="text-center">{{incompleted_task}} </p>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-xl-4">
+                            <div class="card bg-success text-white">
+                                <div class="card-body">
+                                    <p class="text-center"><i class="bi bi-check-lg"></i> Completed Tasks</p>
+                                    <p class="text-center">{{completed_task}} </p>
+                                </div>
+                            </div>
+                          </div>
+                          <div class="col-xl-4">
+                            <div class="card bg-black text-white" >
+                                <div class="card-body">
+                                    <p class="text-center"><i class="bi bi-list-task"></i> Total Tasks</p>
+                                    <p class="text-center">{{total_task}} </p>
+                                </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-xl-4">
+              <div class="card">
+                  <div class="card-header bg-black text-light">TASK FORM</div>
+                  <div class="card-body">
+                      <form class="d-grid" method="POST">
+                            {% csrf_token %}
+                            {{form|crispy}}
+                            <input class="btn btn-dark mt-2" type="submit">
+                      </form>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  </main>
+  <!-- start of graph and lists. -->
+  <section class="mt-5">
+      <div class="container">
+          <div class="row">
+              <div class="col-xl-8">
+
+                  <!-- GRAPH.. -->
+                  <canvas id="myChart" width="400" height="250"></canvas>
+<script>
+const ctx = document.getElementById('myChart').getContext('2d');
+const myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Incompleted Tasks', 'Completed Tasks', 'Total Tasks'],
+        datasets: [{
+            label: '# of TASKS',
+            data: ['{{incompleted_task}}', '{{completed_task}}', '{{total_task}}'],
+            backgroundColor: [
+                '#DC143C',
+                '	#3CB371',
+                '#000000',
+              
+            ],
+            borderColor: [
+                ' #DC143C',
+                '#3CB371',
+                '#000000',
+               
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            y: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
+
+              </div>
+              <!-- Task list -->
+              <div class="col-xl-4">
+                <ul class="list-group">
+                    
+                    <li class="list-group-item bg-black text-white">TASKLIST</li>
+                       {%for task in data%}
+                    <li class="list-group-item">
+                          <div class="row">
+                              <div class="col-7">
+
+                                <small>{{task.date}} </small> <br>
+                                {% if task.iscomplete  %}
+                                <del>  {{task.task}} </del>
+                                {% else %}
+                                {{task.task}}
+
+                                {% endif %}
+                                
+                            </div>
+                            <div class="col-5">
+                                <a class="btn btn-sm btn-secondary" href="{% url 'taskapp-edit' task.id%} "> edit</a>
+                                <a class="btn btn-sm btn-dark"  href="{% url 'taskapp-delete' task.id%} "> delete</a>
+                            </div>
+                              </div>
+                              </li>
+                            {% endfor %}
+
+                            </ul>
+
+
+
+                            </div>
+                          
+                       
+                       
+                    
+                    
+                   
+                
+             
+  </section> 
+  
+{%endblock%}
